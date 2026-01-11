@@ -71,41 +71,40 @@ pipeline {
       }
     }
 
-    stage('Tests') {
-      parallel {
-        stage('Rest') {
-          steps {
-            catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
-              unstash name: 'code'
-              bat 'pytest --junitxml=result-rest.xml test\\rest'
-              stash name: 'rest-res', includes: 'result-rest.xml'
-            }
-          }
-        }
-        stage('Unit') {
-          steps {
-            unstash name: 'unit-res'
-            junit 'result-test.xml'
-          }
-        }
-        stage ('Coverage') {
-          steps {
-            unstash name: 'coverage-res'
-            recordCoverage(
-              tools: [
-                [parser: 'COBERTURA', pattern: 'coverage.xml']
-              ],
-              qualityGates: [
-                [criticality: 'ERROR', integerThreshold: 85, metric: 'LINE', threshold: 85.0],
-                [criticality: 'NOTE', integerThreshold: 95, metric: 'LINE', threshold: 95.0], 
-                [criticality: 'ERROR', integerThreshold: 80, metric: 'BRANCH', threshold: 80.0],
-                [criticality: 'NOTE', integerThreshold: 90, metric: 'BRANCH', threshold: 90.0]
-              ]
-            )
-          }
+    stage('Rest') {
+      steps {
+        catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+          unstash name: 'code'
+          bat 'pytest --junitxml=result-rest.xml test\\rest'
+          stash name: 'rest-res', includes: 'result-rest.xml'
         }
       }
     }
+    
+    stage('Unit') {
+      steps {
+        unstash name: 'unit-res'
+        junit 'result-test.xml'
+      }
+    }
+
+    stage ('Coverage') {
+      steps {
+        unstash name: 'coverage-res'
+        recordCoverage(
+          tools: [
+            [parser: 'COBERTURA', pattern: 'coverage.xml']
+          ],
+          qualityGates: [
+            [criticality: 'ERROR', integerThreshold: 85, metric: 'LINE', threshold: 85.0],
+            [criticality: 'NOTE', integerThreshold: 95, metric: 'LINE', threshold: 95.0], 
+            [criticality: 'ERROR', integerThreshold: 80, metric: 'BRANCH', threshold: 80.0],
+            [criticality: 'NOTE', integerThreshold: 90, metric: 'BRANCH', threshold: 90.0]
+          ]
+        )
+      }
+    }
+
     stage('Performance') {
       steps {
         bat 'D:\\Proyectos\\ESTUDIOS\\UNIR\\DEVOPS\\PRACTICAS\\apache-jmeter-5.6.3\\bin\\jmeter -n -t test\\jmeter\\flask.jmx -f -l flask.jtl'
