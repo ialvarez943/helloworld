@@ -80,7 +80,7 @@ pipeline {
         }
       }
     }
-    
+
     stage('Unit') {
       steps {
         unstash name: 'unit-res'
@@ -110,6 +110,12 @@ pipeline {
         bat 'D:\\Proyectos\\ESTUDIOS\\UNIR\\DEVOPS\\PRACTICAS\\apache-jmeter-5.6.3\\bin\\jmeter -n -t test\\jmeter\\flask.jmx -f -l flask.jtl'
         perfReport sourceDataFiles: 'flask.jtl'
       }
+    }
+  }
+  
+  post{
+    always {
+      cleanWs()
     }
   }
 }
