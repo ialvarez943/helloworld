@@ -18,6 +18,7 @@ pipeline {
         stage('Static') {
           agent {label 'Agent1'}
           steps {
+            echo "${WORKSPACE}"
             sh '''
                 whoami
                 hostname
@@ -38,6 +39,7 @@ pipeline {
         stage('Security') {
           agent {label 'Agent2'}
           steps {
+            echo "${WORKSPACE}"
             sh '''
                 whoami
                 hostname
@@ -61,6 +63,7 @@ pipeline {
       steps {
         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
           unstash name: 'code'
+          echo "${WORKSPACE}"
           sh '''
               whoami
               hostname
@@ -81,6 +84,7 @@ pipeline {
     stage('Start Flask') {
       agent {label 'Agent2'}
       steps {
+        echo "${WORKSPACE}"
         sh '''
           whoami
           hostname
@@ -98,6 +102,7 @@ pipeline {
           steps {
             catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
               unstash name: 'code'
+              echo "${WORKSPACE}"
               sh '''
                 whoami
                 hostname
@@ -115,6 +120,7 @@ pipeline {
           agent {label 'Agent1'}
           steps {
             unstash name: 'unit-res'
+            echo "${WORKSPACE}"
             junit 'result-test.xml'
           }
         }
@@ -122,6 +128,7 @@ pipeline {
           agent {label 'Agent1'}
           steps {
             unstash name: 'coverage-res'
+            echo "${WORKSPACE}"
             recordCoverage(
               tools: [
                 [parser: 'COBERTURA', pattern: 'coverage.xml']
@@ -139,6 +146,7 @@ pipeline {
     }
     stage('Performance') {
       steps {
+        echo "${WORKSPACE}"
         bat 'D:\\Proyectos\\ESTUDIOS\\UNIR\\DEVOPS\\PRACTICAS\\apache-jmeter-5.6.3\\bin\\jmeter -n -t test\\jmeter\\flask.jmx -f -l flask.jtl'
         perfReport sourceDataFiles: 'flask.jtl'
       }
