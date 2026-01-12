@@ -8,7 +8,7 @@ pipeline {
   stages {
     stage('Get Code') {
       steps {
-        git branch: 'master', url: 'https://github.com/ialvarez943/helloworld.git'
+        git branch: 'feature_fix_coverage', url: 'https://github.com/ialvarez943/helloworld.git'
         stash name: 'code', includes: '**'
       }
     }
