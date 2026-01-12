@@ -48,8 +48,7 @@ pipeline {
           unstash name: 'code'
           bat '''
               SET PYTHONPATH=%WORKSPACE%
-              coverage run --branch --source=app --omit=app\\__init__.py,app\\api.py -m pytest test\\unit --junitxml=result-test.xml
-              coverage xml -o coverage.xml
+              coverage run --branch --source=app --omit=app\\__init__.py,app\\api.py -m pytest test\\unit --junitxml=result-test.xml && coverage xml
             '''
         }
       }
